@@ -1,7 +1,10 @@
 import * as vscode from 'vscode';
+import { AutopilotPanel } from './webview/panel';
 
 export function activate(context: vscode.ExtensionContext) {
+    console.log('Activating Goose Autopilot extension');
 	let disposable = vscode.commands.registerCommand('goose-autopilot.openAutopilot', async () => {
+            console.log('Command goose-autopilot.openAutopilot triggered');
 		try {
 			// 1. Activate SCM view
 			await vscode.commands.executeCommand('workbench.view.scm');
@@ -9,9 +12,11 @@ export function activate(context: vscode.ExtensionContext) {
 			// 2. Close all editors
 			await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 			
-			// 3. Create and show terminal named "goose working session"
+			// 3. Create terminal named "goose working session" (hidden initially)
 			const terminal = vscode.window.createTerminal('goose working session');
-			terminal.show();
+			
+			// 4. Create and show the webview panel
+			AutopilotPanel.createOrShow(context.extensionUri);
 			
 			vscode.window.showInformationMessage('Goose Autopilot activated successfully!');
 		} catch (error) {
