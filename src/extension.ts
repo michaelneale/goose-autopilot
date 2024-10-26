@@ -15,7 +15,10 @@ export function activate(context: vscode.ExtensionContext) {
 			// 3. Create terminal named "goose working session" (hidden initially)
 			const terminal = vscode.window.createTerminal('goose working session');
 			
-			// 4. Create and show the webview panel
+			// 4. Hide the bottom panel
+			await vscode.commands.executeCommand('workbench.action.togglePanel');
+			
+			// 5. Create and show the webview panel
 			AutopilotPanel.createOrShow(context.extensionUri);
 			
 			vscode.window.showInformationMessage('Goose Autopilot activated successfully!');
