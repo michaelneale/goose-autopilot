@@ -16,12 +16,22 @@ export class AutopilotPanel {
             async message => {
                 switch (message.command) {
                     case 'submitInstruction':
-                        // Get all terminals and find our specific one
-                        const terminals = vscode.window.terminals;
-                        const gooseTerminal = terminals.find(t => t.name === 'goose working session');
-                        if (gooseTerminal) {
-                            gooseTerminal.sendText(message.text);
-                            gooseTerminal.show();
+                        try {
+                            const { createPlanYaml } = require('../utils/file');
+                            // Create plan.yaml with instructions
+                            const planPath = createPlanYaml(message.text);
+                            
+                            // Get all terminals and find our specific one
+                            const terminals = vscode.window.terminals;
+                            const gooseTerminal = terminals.find(t => t.name === 'goose working session');
+                            if (gooseTerminal) {
+                                // Execute the sq command with the plan file
+                                const command = `sq goose session start --profile block --plan "${planPath}"`;
+                                gooseTerminal.sendText(command);
+                                gooseTerminal.show();
+                            }
+                        } catch (error) {
+                            vscode.window.showErrorMessage(`Failed to process instruction: ${error}`);
                         }
                         return;
                 }
